@@ -23,38 +23,34 @@ describe Oystercard do
     end 
    
     it 'adds 50 value to oystercard' do
-      expect(subject.top_up(50)).to eq 50 
+      subject.balance = 0
+      expect{ subject.top_up(50) }.to change { subject.balance }.from(0).to(50)
     end 
-
-    it 'adds any value to oystercard' do
-      amount = rand(100)
-      expect(subject.top_up(amount)).to eq amount 
-    end 
+  end
 
   describe "top_up limit" do
     it "returns error if balance is on topup" do
-      new_card = Oystercard.new(91)
-      expect{new_card.top_up(0)}.to raise_error
+      new_card = Oystercard.new(80, 90)
+      expect{new_card.top_up(11)}.to raise_error
     end
 
     it "returns error message with limit on topup" do
-      new_card = Oystercard.new(91)
-      LIMIT = 90
-      expect{new_card.top_up(0)}.to raise_error("Balance cannot exceed £#{LIMIT}.")
+      new_card = Oystercard.new(80, 90)
+      limit = new_card.limit
+      expect{new_card.top_up(11)}.to raise_error("Balance cannot exceed £#{limit}.")
     end
 
+    describe '#deduct' do
+      it 'respond_to deduct' do
+        expect(subject).to respond_to(:deduct).with(1).argument
+      end
 
+      it 'deducts amount' do
+        subject.balance = 10
+        expect{ subject.deduct(10) }.to change{ subject.balance }.from(10).to(0)
+      end
 
-   # it "returns error if top_up would cause balance to exceed 90"
-   #   expect()
-      
-  end
-
-
-
-
-
+    end 
+  
   end 
-
-
 end
