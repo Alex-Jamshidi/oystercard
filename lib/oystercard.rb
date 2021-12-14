@@ -4,20 +4,19 @@ class Oystercard
   attr_accessor :balance, :in_transit
   attr_reader :limit
 
-  def initialize(balance = 0, limit = 90, in_transit = false)
+  START_BALANCE = 0
+  START_LIMIT = 90
+  MINIMUM_FARE = 1
+
+  def initialize(balance = START_BALANCE, limit = START_LIMIT, in_transit = false)
     @balance = balance
     @limit = limit
     @in_transit = in_transit
-    puts "You have created a new oyster card with balance: #{balance}, limit: #{limit}"
   end
 
   def top_up(amount)
     unless (balance + amount) <= limit then fail("Balance cannot exceed £#{limit}.") end
       @balance += amount
-  end 
-
-  def deduct(amount)
-    @balance -= amount
   end 
   
   def in_journey?
@@ -25,11 +24,19 @@ class Oystercard
   end
 
   def touch_in
+    raise("Touch in failed. Balance exceeds minimum amount.") unless balance >= 1
     @in_transit = true
   end
 
   def touch_out
     @in_transit = false
+    deduct(MINIMUM_FARE)
   end
-  
+
+  def deduct(amount)
+    @balance -= amount
+  end 
+
+  private :deduct
+
 end

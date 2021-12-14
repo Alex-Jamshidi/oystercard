@@ -1,24 +1,20 @@
-require "oystercard"
-
-# Given
-# When
-# Then
+require 'oystercard'
 
 describe Oystercard do
 
-  describe "creating new oystercard" do 
-    it "returns 0 balance as default" do
-      expect(subject.balance).to eq 0
+  describe 'creating new oystercard' do 
+    it 'returns starting balance as default' do
+      expect(subject.balance).to eq Oystercard::START_BALANCE
     end
 
-    it "returns 50 balance when given argument 50" do
+    it 'returns 50 balance when given argument 50' do
       new_card = Oystercard.new(50)
       expect(new_card.balance).to eq 50
     end
   end 
 
-  describe "#top_up" do
-    it "responds to topping up" do 
+  describe '#top_up' do
+    it 'responds to topping up' do 
       expect(subject).to respond_to(:top_up)
     end 
    
@@ -28,19 +24,22 @@ describe Oystercard do
     end 
   end
 
-  describe "top_up limit" do
-    it "returns error if balance is on topup" do
-      new_card = Oystercard.new(80, 90)
-      expect{new_card.top_up(11)}.to raise_error
+  describe 'top_up limit' do
+    it 'returns error if balance is on topup' do
+      new_card = Oystercard.new(Oystercard::START_LIMIT, Oystercard::START_LIMIT)
+      expect{new_card.top_up(1)}.to raise_error
     end
 
-    it "returns error message with limit on topup" do
-      new_card = Oystercard.new(80, 90)
+    it 'returns error message with limit on topup' do
+      new_card = Oystercard.new(Oystercard::START_LIMIT, Oystercard::START_LIMIT)
       limit = new_card.limit
-      expect{new_card.top_up(11)}.to raise_error("Balance cannot exceed £#{limit}.")
+      expect{new_card.top_up(1)}.to raise_error("Balance cannot exceed £#{limit}.")
     end
   end
 
+# deduct method no longer being tested as is private
+
+=begin
   describe '#deduct' do
     it 'respond_to deduct' do
       expect(subject).to respond_to(:deduct).with(1).argument
@@ -51,6 +50,7 @@ describe Oystercard do
       expect{ subject.deduct(10) }.to change{ subject.balance }.from(10).to(0)
     end
   end 
+=end
 
   describe '#in_journey?' do
     it 'respond_to in_journey?' do
@@ -74,7 +74,9 @@ describe Oystercard do
     end 
 
     it 'when I touch_in the in_transit instance variable will change to true' do
-      expect(subject.touch_in).to eq(true)
+      subject.balance = Oystercard::MINIMUM_FARE
+      subject.touch_in
+      expect(subject.in_transit).to eq(true)
     end
   end
 
@@ -83,8 +85,23 @@ describe Oystercard do
       expect(subject).to respond_to(:touch_out) 
     end 
 
-    it 'when I touch_out the in_transit instance variable will change to "out"' do
-      expect(subject.touch_out).to eq(false)
+    it 'when I touch_out the in_transit instance variable will change to false' do
+      subject.touch_out
+      expect(subject.in_transit).to eq(false)
+    end
+  end
+
+  describe 'minimum balance for travel' do
+    it 'when balance is less than £1, touch_in raises an exception' do
+      subject.balance = Oystercard::MINIMUM_FARE - 1
+      expect{ subject.touch_in }.to raise_error("Touch in failed. Balance exceeds minimum amount.")
+    end
+  end
+
+  describe 'debiting card' do
+    it 'touch_out debits oystercard by minimum fare' do
+      subject.balance = Oystercard::MINIMUM_FARE
+      expect{subject.touch_out}.to change{subject.balance}.by(-Oystercard::MINIMUM_FARE)
     end
   end
 
