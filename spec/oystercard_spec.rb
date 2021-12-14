@@ -39,18 +39,53 @@ describe Oystercard do
       limit = new_card.limit
       expect{new_card.top_up(11)}.to raise_error("Balance cannot exceed £#{limit}.")
     end
+  end
 
-    describe '#deduct' do
-      it 'respond_to deduct' do
-        expect(subject).to respond_to(:deduct).with(1).argument
-      end
+  describe '#deduct' do
+    it 'respond_to deduct' do
+      expect(subject).to respond_to(:deduct).with(1).argument
+    end
 
-      it 'deducts amount' do
-        subject.balance = 10
-        expect{ subject.deduct(10) }.to change{ subject.balance }.from(10).to(0)
-      end
-
-    end 
-  
+    it 'deducts amount' do
+      subject.balance = 10
+      expect{ subject.deduct(10) }.to change{ subject.balance }.from(10).to(0)
+    end
   end 
+
+  describe '#in_journey?' do
+    it 'respond_to in_journey?' do
+      expect(subject).to respond_to(:in_journey?)
+    end
+
+    it 'check if in journey when in journey' do
+      subject.in_transit = true
+      expect(subject.in_journey?).to eq true
+    end
+
+    it 'check if in journey when not in journey' do
+      subject.in_transit = false
+      expect(subject.in_journey?).to eq false
+    end
+  end
+
+  describe 'touch_in' do
+    it 'touch_in' do
+      expect(subject).to respond_to(:touch_in) 
+    end 
+
+    it 'when I touch_in the in_transit instance variable will change to true' do
+      expect(subject.touch_in).to eq(true)
+    end
+  end
+
+  describe 'touch_out' do
+    it 'touch_out' do
+      expect(subject).to respond_to(:touch_out) 
+    end 
+
+    it 'when I touch_out the in_transit instance variable will change to "out"' do
+      expect(subject.touch_out).to eq(false)
+    end
+  end
+
 end
