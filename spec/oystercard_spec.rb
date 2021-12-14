@@ -33,24 +33,9 @@ describe Oystercard do
     it 'returns error message with limit on topup' do
       new_card = Oystercard.new(Oystercard::START_LIMIT, Oystercard::START_LIMIT)
       limit = new_card.limit
-      expect{new_card.top_up(1)}.to raise_error("Balance cannot exceed £#{limit}.")
+      expect{new_card.top_up(1)}.to raise_error("Top up failed. Balance cannot exceed £#{limit}.")
     end
   end
-
-# deduct method no longer being tested as is private
-
-=begin
-  describe '#deduct' do
-    it 'respond_to deduct' do
-      expect(subject).to respond_to(:deduct).with(1).argument
-    end
-
-    it 'deducts amount' do
-      subject.balance = 10
-      expect{ subject.deduct(10) }.to change{ subject.balance }.from(10).to(0)
-    end
-  end 
-=end
 
   describe '#in_journey?' do
     it 'respond_to in_journey?' do
@@ -68,7 +53,7 @@ describe Oystercard do
     end
   end
 
-  describe 'touch_in' do
+  describe '#touch_in' do
     it 'touch_in' do
       expect(subject).to respond_to(:touch_in) 
     end 
@@ -80,7 +65,7 @@ describe Oystercard do
     end
   end
 
-  describe 'touch_out' do
+  describe '#touch_out' do
     it 'touch_out' do
       expect(subject).to respond_to(:touch_out) 
     end 
@@ -106,3 +91,18 @@ describe Oystercard do
   end
 
 end
+
+# deduct method no longer being tested as is private
+
+=begin
+  describe '#deduct' do
+    it 'respond_to deduct' do
+      expect(subject).to respond_to(:deduct).with(1).argument
+    end
+
+    it 'deducts amount' do
+      subject.balance = 10
+      expect{ subject.deduct(10) }.to change{ subject.balance }.from(10).to(0)
+    end
+  end 
+=end

@@ -15,7 +15,7 @@ class Oystercard
   end
 
   def top_up(amount)
-    unless (balance + amount) <= limit then fail("Balance cannot exceed £#{limit}.") end
+    fail("Top up failed. Balance cannot exceed £#{limit}.") unless (balance + amount) <= limit
       @balance += amount
   end 
   
@@ -24,7 +24,7 @@ class Oystercard
   end
 
   def touch_in
-    raise("Touch in failed. Balance exceeds minimum amount.") unless balance >= 1
+    raise("Touch in failed. Balance exceeds minimum amount.") unless balance >= MINIMUM_FARE
     @in_transit = true
   end
 
