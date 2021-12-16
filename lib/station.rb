@@ -641,3 +641,4 @@ class Station
   private :check_zone
 
 end
+

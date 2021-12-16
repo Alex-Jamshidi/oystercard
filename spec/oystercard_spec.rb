@@ -2,7 +2,8 @@ require 'oystercard'
 
 describe Oystercard do
 
-  let(:station) { double(:station) }
+  let(:entry_station) { double(:entry_station) }
+  let(:exit_station) { double(:entry_station) }
 
   describe 'creating new oystercard' do 
     it 'returns starting balance as default' do
@@ -48,7 +49,7 @@ describe Oystercard do
     end
 
     it 'check if in journey when in journey' do
-      subject.entry_station = :station
+      subject.journey[:entry_station] = :entry_station
       expect(subject.in_journey?).to eq true
     end
 
@@ -62,16 +63,16 @@ describe Oystercard do
       expect(subject).to respond_to(:touch_in).with(1).argument 
     end 
 
-    it 'the entry_station will change to :station' do
+    it 'the journey key entry_station will accept a station' do
       subject.balance = Oystercard::MINIMUM_FARE
-      subject.touch_in(:station)
-      expect(subject.entry_station).to eq(:station)
+      subject.touch_in(:entry_station)
+      expect(subject.journey[:entry_station]).to eq(:entry_station)
     end
 
     it 'journey start value will equal entry_station' do
       subject.balance = Oystercard::MINIMUM_FARE
-      subject.touch_in(:station)
-      expect(subject.journey[:entry_station]).to eq :station
+      subject.touch_in(:entry_station)
+      expect(subject.journey[:entry_station]).to eq :entry_station
     end
   end
 
@@ -81,17 +82,17 @@ describe Oystercard do
     end 
 
     it 'entry_station is set to nil' do
-      subject.entry_station = :station
+      subject.journey[:entry_station] = :entry_station
       subject.balance = Oystercard::MINIMUM_FARE
-      subject.touch_out(:station)
-      expect(subject.entry_station).to eq(nil)
+      subject.touch_out(:exit_station)
+      expect(subject.journey[:entry_station]).to eq(nil)
     end
 
-    it 'journey exit value will equal exit_station' do
+    it 'journey[0] in history exit value will equal exit_station' do
       subject.balance = Oystercard::MINIMUM_FARE
-      subject.entry_station = :station
-      subject.touch_out(:station)
-      expect(subject.journey[:exit_station]).to eq :station
+      subject.journey[:entry_station] = :entry_station
+      subject.touch_out(:exit_station)
+      expect(subject.history[0][:exit_station]).to eq :exit_station
     end
   end
 
@@ -118,7 +119,6 @@ describe Oystercard do
       expect(subject.history).to eq([{:entry_station => :station, :exit_station => :station}])
     end 
   end
-
 end
 
 =begin
@@ -149,6 +149,20 @@ end
       subject.journey = {:entry_station => :station, :exit_station => :station}
       subject.store_journey
       expect(subject.history).to eq([subject.journey])
+    end
+  end
+
+   clear_journey method no longer being tested as is private
+===============================================================
+
+  describe '#clear_journey' do
+    let(:journey){ { :entry_station => :entry_station, :exit_station => :exit_station } }
+    
+    it 'clears journey to nil values' do
+      subject.journey = journey
+      subject.clear_journey
+      expect(subject.journey[0]).to be_nil
+      expect(subject.journey[1]).to be_nil
     end
   end
 
