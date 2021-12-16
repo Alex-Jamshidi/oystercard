@@ -13,6 +13,9 @@ describe Oystercard do
       expect(subject.journey).to be_empty
     end
 
+    it 'new oystercard history is empty' do
+      expect(subject.history).to be_empty
+    end
   end 
 
   describe '#top_up' do
@@ -70,7 +73,6 @@ describe Oystercard do
       subject.touch_in(:station)
       expect(subject.journey[:entry_station]).to eq :station
     end
-
   end
 
   describe '#touch_out' do
@@ -87,11 +89,10 @@ describe Oystercard do
 
     it 'journey exit value will equal exit_station' do
       subject.balance = Oystercard::MINIMUM_FARE
-      subject.touch_in(:station)
+      subject.entry_station = :station
       subject.touch_out(:station)
       expect(subject.journey[:exit_station]).to eq :station
     end
-
   end
 
   describe 'minimum balance for travel' do
@@ -108,14 +109,25 @@ describe Oystercard do
     end
   end
 
+
+  describe '#touch_in && #touch_out' do
+    it 'touching in and out stores a journey' do
+      subject.balance = Oystercard::MINIMUM_FARE
+      subject.touch_in(:station)
+      subject.touch_out(:station)
+      expect(subject.history).to eq([{:entry_station => :station, :exit_station => :station}])
+    end 
+  end
+
 end
 
-
-
-# deduct method no longer being tested as is private
 =begin
-  xdescribe '#deduct' do
-  it 'respond_to deduct' do
+
+   deduct method no longer being tested as is private
+========================================================
+
+  describe '#deduct' do
+    it 'respond_to deduct' do
       expect(subject).to respond_to(:deduct).with(1).argument
     end
 
@@ -124,4 +136,20 @@ end
       expect{ subject.deduct(10) }.to change{ subject.balance }.from(10).to(0)
     end
   end 
+
+   store_journey method no longer being tested as is private
+===============================================================
+
+  describe '#store_journey' do
+    it 'responds to store_journey' do 
+      expect(subject).to respond_to(:store_journey)
+    end 
+
+    it 'stores journey in history' do
+      subject.journey = {:entry_station => :station, :exit_station => :station}
+      subject.store_journey
+      expect(subject.history).to eq([subject.journey])
+    end
+  end
+
 =end
