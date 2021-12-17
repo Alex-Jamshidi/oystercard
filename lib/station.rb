@@ -1,13 +1,16 @@
+# frozen_string_literal: true
+
 # This is my station class
 class Station
   attr_reader :name, :zone
 
   def initialize(name)
-    fail "Station name does not exist" if !check_zone(name)
+    raise 'Station name does not exist' unless check_zone(name)
+
     @name = name
-    @zone = self.check_zone(@name)
+    @zone = check_zone(@name)
   end
-  
+
   def check_zone(name)
     stations = {
       'Abbey Road' => 3,
@@ -634,11 +637,10 @@ class Station
       'Woolwich' => 4,
       'Woolwich Arsenal' => 4,
       'Woolwich Dockyard' => 3,
-      'Worcester Park' => 4}
-    zone = stations[name]
+      'Worcester Park' => 4
+    }
+    stations[name]
   end
 
   private :check_zone
-
 end
-
